@@ -1,0 +1,156 @@
+<!-- http://localhost/index.php -->
+<?php
+include 'koneksi.php';
+
+// Ambil pesan flash session
+session_start();
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
+
+// Ambil semua data barang
+$stmt = $conn->query("SELECT * FROM barang ORDER BY id DESC");
+$barang_list = $stmt->fetchAll();
+
+// Hitung statistik
+$total_item  = count($barang_list);
+$total_stok  = array_sum(array_column($barang_list, 'jumlah'));
+$total_nilai = array_sum(array_map(fn($b) => $b['jumlah'] * $b['harga'], $barang_list));
+
+function formatRupiah($num) {
+    return 'Rp ' . number_format($num, 0, ',', '.');
+}
+function stockBadge($qty) {
+    if ($qty <= 5)   return ['badge-low',    'Kritis'];
+    if ($qty <= 20)  return ['badge-medium', 'Sedang'];
+    return ['badge-ok', 'Aman'];
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaris Barang — Daftar Barang</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="index.php" class="logo">
+            <div class="logo-icon">📦</div>
+            Inventaris<span>App</span>
+        </a>
+        <nav>
+            <a href="index.php" class="active">Daftar Barang</a>
+            <a href="tambah.php">+ Tambah</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="page-title">
+        <h1>📋 Manajemen Inventaris</h1>
+        <p>Kelola seluruh data barang dengan mudah dan efisien.</p>
+    </div>
+
+    <?php if ($flash): ?>
+        <div class="alert alert-<?= $flash['type'] ?>">
+            <?= htmlspecialchars($flash['msg']) ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-icon purple">📦</div>
+            <div>
+                <div class="stat-label">Total Jenis Barang</div>
+                <div class="stat-value"><?= $total_item ?></div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">🔢</div>
+            <div>
+                <div class="stat-label">Total Stok</div>
+                <div class="stat-value"><?= number_format($total_stok, 0, ',', '.') ?></div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">💰</div>
+            <div>
+                <div class="stat-label">Total Nilai Inventaris</div>
+                <div class="stat-value" style="font-size:0.95rem"><?= formatRupiah($total_nilai) ?></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Data Barang</h2>
+            <a href="tambah.php" class="btn btn-primary">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Tambah Barang
+            </a>
+        </div>
+
+        <div class="table-wrap">
+            <?php if (empty($barang_list)): ?>
+                <div class="empty-state">
+                    <div class="big-icon">📭</div>
+                    <p>Belum ada data barang. Mulai tambahkan sekarang!</p>
+                    <a href="tambah.php" class="btn btn-primary">+ Tambah Barang Pertama</a>
+                </div>
+            <?php else: ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nama Barang</th>
+                            <th>Jumlah</th>
+                            <th>Harga Satuan</th>
+                            <th>Total Nilai</th>
+                            <th>Tanggal Masuk</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($barang_list as $i => $b):
+                            [$badgeClass, $badgeLabel] = stockBadge($b['jumlah']);
+                        ?>
+                        <tr>
+                            <td class="mono" style="color:var(--text-muted)"><?= $b['id'] ?></td>
+                            <td><strong><?= htmlspecialchars($b['nama_barang']) ?></strong></td>
+                            <td>
+                                <?= number_format($b['jumlah'], 0, ',', '.') ?>
+                                <span class="badge <?= $badgeClass ?>" style="margin-left:6px"><?= $badgeLabel ?></span>
+                            </td>
+                            <td class="mono"><?= formatRupiah($b['harga']) ?></td>
+                            <td class="mono"><?= formatRupiah($b['jumlah'] * $b['harga']) ?></td>
+                            <td><?= date('d M Y', strtotime($b['tanggal_masuk'])) ?></td>
+                            <td>
+                                <div style="display:flex;gap:6px">
+                                    <a href="edit.php?id=<?= $b['id'] ?>" class="btn btn-edit btn-sm">✏️ Edit</a>
+                                    <a href="hapus.php?id=<?= $b['id'] ?>"
+                                       class="btn btn-delete btn-sm"
+                                       onclick="return confirm('⚠️ Yakin ingin menghapus barang ini?\n\nNama: <?= addslashes(htmlspecialchars($b['nama_barang'])) ?>\n\nTindakan ini tidak bisa dibatalkan!')">
+                                        🗑️ Hapus
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+    </div>
+</main>
+
+<footer>
+    &copy; <?= date('Y') ?> Inventaris App &mdash; Dibangun dengan PHP &amp; conn
+</footer>
+
+</body>
+</html>
