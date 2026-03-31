@@ -42,6 +42,7 @@ function stockBadge($qty) {
             Inventaris<span>App</span>
         </a>
         <nav>
+            <a href="logout.php">Log Out</a>
             <a href="index.php" class="active">Daftar Barang</a>
             <a href="tambah.php">+ Tambah</a>
         </nav>
