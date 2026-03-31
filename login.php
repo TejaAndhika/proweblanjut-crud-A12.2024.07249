@@ -1,42 +1,94 @@
-<?php
-// login.php - Halaman & Proses Login
+<!-- http://localhost/login.php -->
 
-include 'koneksi.php';
+<?php
+// login.php - Halaman & Proses Login (dengan fitur Cookies "Ingat Saya")
+
+require_once 'koneksi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Jika sudah login, langsung ke index
+// ── Cek apakah sudah login via SESSION ──────────────────────────
 if (!empty($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
 
+// ── Cek Cookie "Remember Me" ─────────────────────────────────────
+// Jika cookie remember_token ada, verifikasi ke database lalu auto-login
+if (empty($_SESSION['user_id']) && !empty($_COOKIE['remember_token'])) {
+    $token = $_COOKIE['remember_token'];
+    $stmt  = $conn->prepare("SELECT * FROM users WHERE remember_token = :token LIMIT 1");
+    $stmt->execute([':token' => $token]);
+    $user  = $stmt->fetch();
+
+    if ($user) {
+        // Token valid — pulihkan sesi
+        $_SESSION['user_id']  = $user['id'];
+        $_SESSION['username'] = $user['username'];
+
+        // Perbarui masa berlaku cookie (rolling cookie — 30 hari dari sekarang)
+        $new_token = bin2hex(random_bytes(32));
+        $expire    = time() + (86400 * 30); // 30 hari
+        setcookie('remember_token', $new_token, [
+            'expires'  => $expire,
+            'path'     => '/',
+            'httponly' => true,   // Tidak bisa diakses oleh JavaScript
+            'samesite' => 'Lax',
+        ]);
+
+        // Simpan token baru ke database
+        $stmt = $conn->prepare("UPDATE users SET remember_token = :token WHERE id = :id");
+        $stmt->execute([':token' => $new_token, ':id' => $user['id']]);
+
+        header('Location: index.php');
+        exit;
+    } else {
+        // Token tidak valid / sudah kedaluwarsa — hapus cookie
+        setcookie('remember_token', '', time() - 3600, '/');
+    }
+}
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    $username    = trim($_POST['username'] ?? '');
+    $password    = trim($_POST['password'] ?? '');
+    $remember_me = isset($_POST['remember_me']);
 
     if (empty($username) || empty($password)) {
         $error = 'Username dan password wajib diisi.';
     } else {
-        // Ambil user dari database berdasarkan username
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
+        // Ambil user dari database
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch();
 
-        // Verifikasi password menggunakan password_verify (bcrypt)
         if ($user && password_verify($password, $user['password'])) {
-            // Login berhasil — simpan data ke session
+            // ── Login berhasil — simpan ke SESSION ──
             $_SESSION['user_id']  = $user['id'];
             $_SESSION['username'] = $user['username'];
 
-            // Redirect ke halaman tujuan semula, atau index
+            // ── Fitur "Ingat Saya" — set COOKIE jika dicentang ──
+            if ($remember_me) {
+                $token  = bin2hex(random_bytes(32)); // Token acak 64 karakter
+                $expire = time() + (86400 * 30);     // Berlaku 30 hari
+
+                setcookie('remember_token', $token, [
+                    'expires'  => $expire,
+                    'path'     => '/',
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
+
+                // Simpan token ke kolom remember_token di database
+                $stmt = $conn->prepare("UPDATE users SET remember_token = :token WHERE id = :id");
+                $stmt->execute([':token' => $token, ':id' => $user['id']]);
+            }
+
             $redirect = $_SESSION['redirect_after_login'] ?? 'index.php';
             unset($_SESSION['redirect_after_login']);
-
             header('Location: ' . $redirect);
             exit;
         } else {
@@ -184,6 +236,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .toggle-pw:hover { color: var(--text); }
 
+        .remember-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.1rem;
+        }
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            user-select: none;
+        }
+        .remember-label input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            padding: 0;
+            border-radius: 4px;
+        }
+        .remember-label:hover { color: var(--text); }
+        .cookie-badge {
+            font-size: 0.72rem;
+            background: rgba(108,99,255,0.12);
+            color: var(--accent);
+            border: 1px solid rgba(108,99,255,0.25);
+            border-radius: 999px;
+            padding: 2px 9px;
+            font-weight: 600;
+        }
+
         .btn-login {
             width: 100%;
             padding: 12px;
@@ -261,6 +346,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
+            <div class="remember-row">
+                <label class="remember-label">
+                    <input type="checkbox" name="remember_me" id="remember_me">
+                    Ingat Saya (30 hari)
+                </label>
+                <span class="cookie-badge">🍪 Cookie</span>
+            </div>
+
             <button type="submit" class="btn-login">🔐 Masuk ke Aplikasi</button>
         </form>
     </div>
@@ -268,6 +361,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="hint">
         Akun default pengujian:<br>
         Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin123</strong>
+    </div>
+
+    <div style="text-align:center;margin-top:1.25rem;font-size:0.85rem;color:var(--text-muted)">
+        Belum punya akun?
+        <a href="register.php" style="color:var(--accent);text-decoration:none;font-weight:600;margin-left:4px">Daftar di sini →</a>
     </div>
 
     <footer>&copy; <?= date('Y') ?> Inventaris App — PHP &amp; PDO</footer>

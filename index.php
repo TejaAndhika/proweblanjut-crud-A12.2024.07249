@@ -1,9 +1,49 @@
 <!-- http://localhost/index.php -->
 <?php
+// index.php
+
 include 'koneksi.php';
 
-// Ambil pesan flash session
+// ── Manajemen Sesi & Cookie ──────────────────────────────────────
 session_start();
+
+// Jika belum login via SESSION, cek Cookie "Remember Me"
+if (empty($_SESSION['user_id'])) {
+    if (!empty($_COOKIE['remember_token'])) {
+        $token = $_COOKIE['remember_token'];
+        $stmt  = $conn->prepare("SELECT * FROM users WHERE remember_token = :token LIMIT 1");
+        $stmt->execute([':token' => $token]);
+        $user  = $stmt->fetch();
+
+        if ($user) {
+            // Pulihkan sesi dari cookie
+            $_SESSION['user_id']  = $user['id'];
+            $_SESSION['username'] = $user['username'];
+
+            // Perbarui cookie (rolling — 30 hari dari sekarang)
+            $new_token = bin2hex(random_bytes(32));
+            setcookie('remember_token', $new_token, [
+                'expires'  => time() + (86400 * 30),
+                'path'     => '/',
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+            $stmt = $conn->prepare("UPDATE users SET remember_token = :token WHERE id = :id");
+            $stmt->execute([':token' => $new_token, ':id' => $user['id']]);
+        } else {
+            // Cookie tidak valid — hapus dan arahkan ke login
+            setcookie('remember_token', '', time() - 3600, '/');
+            header('Location: login.php');
+            exit;
+        }
+    } else {
+        // Tidak ada sesi maupun cookie — arahkan ke login
+        header('Location: login.php');
+        exit;
+    }
+}
+
+// Ambil pesan flash session
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
