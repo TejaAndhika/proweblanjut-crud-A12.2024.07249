@@ -1,7 +1,7 @@
 <?php
 // logout.php - Proses Logout: Hancurkan sesi, hapus cookie, redirect ke login
 
-include 'koneksi.php';
+include __DIR__ . '/../../public/koneksi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -40,5 +40,5 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // ── Redirect ke halaman login ─────────────────────────────────────
-header('Location: login.php');
+header('Location: /views/auth/login.php');
 exit;

@@ -12,7 +12,7 @@ $page = $_GET['page'] ?? 'login';
 $protected = ['barang', 'tambah', 'edit', 'hapus'];
 
 if (in_array($page, $protected) && empty($_SESSION['user_id'])) {
-    $_SESSION['redirect_after_login'] = 'login.php?page=' . $page;
+    $_SESSION['redirect_after_login'] = 'index.php?page=login' . '&redirect=' . $page;
     header('Location: index.php?page=login');
     exit;
 }
