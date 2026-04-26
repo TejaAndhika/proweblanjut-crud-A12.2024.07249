@@ -41,5 +41,5 @@ $total_nilai = array_sum(array_map(fn($b) => $b['jumlah'] * $b['harga'], $barang
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-require_once __DIR__ . '/../views/barang/index.php';
+require_once __DIR__ . '/../views/barang/daftar.php';
 ?>

@@ -1,9 +1,9 @@
-<!-- http://localhost/login.php -->
+<!-- http://localhost/views/auth/login.php -->
 
 <?php
 // login.php - Halaman & Proses Login (dengan fitur Cookies "Ingat Saya")
 
-require_once 'koneksi.php';
+require_once __DIR__ . '/../../public/koneksi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -11,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // ── Cek apakah sudah login via SESSION ──────────────────────────
 if (!empty($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../../public/index.php');
     exit;
 }
 
@@ -42,7 +42,7 @@ if (empty($_SESSION['user_id']) && !empty($_COOKIE['remember_token'])) {
         $stmt = $conn->prepare("UPDATE users SET remember_token = :token WHERE id = :id");
         $stmt->execute([':token' => $new_token, ':id' => $user['id']]);
 
-        header('Location: index.php');
+        header('Location: ../../public/index.php');
         exit;
     } else {
         // Token tidak valid / sudah kedaluwarsa — hapus cookie
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([':token' => $token, ':id' => $user['id']]);
             }
 
-            $redirect = $_SESSION['redirect_after_login'] ?? 'index.php';
+            $redirect = $_SESSION['redirect_after_login'] ?? '../../public/index.php';
             unset($_SESSION['redirect_after_login']);
             header('Location: ' . $redirect);
             exit;

@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // ── Hapus Cookie "Remember Me" ───────────────────────────────────
-// Jika cookie remember_token ada, hapus dari database dan dari browser
+// Jika cookie remember_token ada, hapus dari database dan dari browser 
 if (!empty($_COOKIE['remember_token'])) {
     // Hapus token dari kolom remember_token di tabel users
     $stmt = $conn->prepare("UPDATE users SET remember_token = NULL WHERE remember_token = :token");

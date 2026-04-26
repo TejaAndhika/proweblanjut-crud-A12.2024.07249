@@ -1,15 +1,15 @@
 <?php
 // register.php - Halaman Registrasi User Baru
 
-include 'koneksi.php';
+include __DIR__ . '/../../public/koneksi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Jika sudah login, langsung ke index
+// Jika sudah login, langsung ke public/index.php
 if (!empty($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../../public/index.php');
     exit;
 }
 

@@ -1,7 +1,7 @@
 <?php
 // tambah.php - Tambah Barang + Upload Gambar
 
-include 'koneksi.php';
+include __DIR__ . '/../../public/koneksi.php';
 session_start();
 
 $errors = [];
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'type' => 'success',
                 'msg'  => '✅ Barang "' . htmlspecialchars($data['nama_barang']) . '" berhasil ditambahkan!',
             ];
-            header('Location: index.php');
+            header('Location: /views/barang/daftar.php');
             exit;
         }
     }
@@ -169,13 +169,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <header>
     <div class="header-inner">
-        <a href="index.php" class="logo">
+        <a href="../../public/index.php" class="logo">
             <div class="logo-icon">📦</div>
             Inventaris<span>App</span>
         </a>
         <nav>
-            <a href="index.php">Daftar Barang</a>
-            <a href="tambah.php" class="active">+ Tambah</a>
+            <a href="/views/barang/daftar.php">Daftar Barang</a>
+            <a href="/views/barang/tambah.php" class="active">+ Tambah</a>
         </nav>
     </div>
 </header>
@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card-header">
             <h2>📝 Form Tambah Barang</h2>
         </div>
-        <form method="POST" action="tambah.php" enctype="multipart/form-data">
+        <form method="POST" action="/views/barang/tambah.php" enctype="multipart/form-data">
             <div class="form-grid">
                 <div class="form-group full">
                     <label for="nama_barang">Nama Barang</label>
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="form-actions">
-                <a href="index.php" class="btn btn-secondary">← Batal</a>
+                <a href="/views/barang/daftar.php" class="btn btn-secondary">← Batal</a>
                 <button type="submit" class="btn btn-primary">✅ Simpan Barang</button>
             </div>
         </form>

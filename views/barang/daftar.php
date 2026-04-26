@@ -2,8 +2,7 @@
 
 <?php
 
-include 'koneksi.php';
-session_start();
+include __DIR__ . '/../../public/koneksi.php';
 
 // ── Manajemen Sesi & Cookie ──────────────────────────────────────
 if (empty($_SESSION['user_id'])) {
@@ -102,9 +101,9 @@ function stockBadge($qty) {
             Inventaris<span>App</span>
         </a>
         <nav>
-            <a href="logout.php">Log Out</a>
-            <a href="index.php" class="active">Daftar Barang</a>
-            <a href="tambah.php">+ Tambah</a>
+            <a href="/views/auth/logout.php">Log Out</a>
+            <a href="/views/barang/daftar.php" class="active">Daftar Barang</a>
+            <a href="/views/barang/tambah.php">+ Tambah</a>
         </nav>
     </div>
 </header>
@@ -150,7 +149,7 @@ function stockBadge($qty) {
     <div class="card">
         <div class="card-header">
             <h2>Data Barang</h2>
-            <a href="tambah.php" class="btn btn-primary">
+            <a href="/views/barang/tambah.php" class="btn btn-primary">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                 Tambah Barang
             </a>
@@ -161,7 +160,7 @@ function stockBadge($qty) {
                 <div class="empty-state">
                     <div class="big-icon">📭</div>
                     <p>Belum ada data barang. Mulai tambahkan sekarang!</p>
-                    <a href="tambah.php" class="btn btn-primary">+ Tambah Barang Pertama</a>
+                    <a href="/views/barang/tambah.php" class="btn btn-primary">+ Tambah Barang Pertama</a>
                 </div>
             <?php else: ?>
                 <table>
