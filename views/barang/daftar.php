@@ -68,7 +68,7 @@ function stockBadge($qty) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventaris Barang — Daftar Barang</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../public/style.css">
     <style>
         .barang-img {
             width: 52px;
@@ -96,7 +96,7 @@ function stockBadge($qty) {
 
 <header>
     <div class="header-inner">
-        <a href="index.php" class="logo">
+        <a href="../../public/index.php" class="logo">
             <div class="logo-icon">📦</div>
             Inventaris<span>App</span>
         </a>

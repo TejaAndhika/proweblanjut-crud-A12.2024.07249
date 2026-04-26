@@ -1,6 +1,6 @@
 <?php
 
-include 'koneksi.php';
+include __DIR__ . '/../../public/koneksi.php';
 session_start();
 
 // Prepared Statement — Validasi ID dari URL
@@ -8,7 +8,7 @@ $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$id) {
     $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'ID tidak valid.'];
-    header('Location: index.php');
+    header('Location: /views/barang/daftar.php');
     exit;
 }
 
@@ -19,7 +19,7 @@ $barang = $stmt->fetch();
 
 if (!$barang) {
     $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Data barang tidak ditemukan.'];
-    header('Location: index.php');
+    header('Location: /views/barang/daftar.php');
     exit;
 }
 
@@ -39,5 +39,5 @@ $_SESSION['flash'] = [
     'type' => 'success',
     'msg'  => 'Barang "' . htmlspecialchars($barang['nama_barang']) . '" berhasil dihapus dari inventaris.',
 ];
-header('Location: index.php');
+header('Location: /views/barang/daftar.php');
 exit;

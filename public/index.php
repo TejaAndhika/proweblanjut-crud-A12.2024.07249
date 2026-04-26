@@ -1,7 +1,6 @@
 <!-- http://localhost/public/index.php -->
 
 <?php
-// public/index.php - Router Utama
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

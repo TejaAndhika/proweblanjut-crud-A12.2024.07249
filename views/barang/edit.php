@@ -1,12 +1,12 @@
 <?php
 // edit.php - Edit Barang + Ganti/Hapus Gambar
 
-include 'koneksi.php';
+include __DIR__ . '/../../public/koneksi.php';
 session_start();
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
-    header('Location: index.php');
+    header('Location: /views/barang/daftar.php');
     exit;
 }
 
@@ -16,7 +16,7 @@ $barang = $stmt->fetch();
 
 if (!$barang) {
     $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Data barang tidak ditemukan.'];
-    header('Location: index.php');
+    header('Location: /views/barang/daftar.php');
     exit;
 }
 
@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             $_SESSION['flash'] = ['type' => 'success', 'msg' => '✅ Data barang berhasil diperbarui!'];
-            header('Location: index.php');
+            header('Location: /views/barang/daftar.php');
             exit;
         }
     }
@@ -156,7 +156,7 @@ $punya_gambar = !empty($barang['gambar']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Barang — Inventaris App</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../public/style.css">
     <style>
         .img-preview-wrap { margin-top: 10px; }
         .img-preview-wrap img {
@@ -259,13 +259,13 @@ $punya_gambar = !empty($barang['gambar']);
 <body>
 <header>
     <div class="header-inner">
-        <a href="index.php" class="logo">
+        <a href="/views/barang/daftar.php" class="logo">
             <div class="logo-icon">📦</div>
             Inventaris<span>App</span>
         </a>
         <nav>
-            <a href="index.php">Daftar Barang</a>
-            <a href="tambah.php">+ Tambah</a>
+            <a href="/views/barang/daftar.php">Daftar Barang</a>
+            <a href="/views/barang/tambah.php">+ Tambah</a>
         </nav>
     </div>
 </header>
@@ -377,7 +377,7 @@ $punya_gambar = !empty($barang['gambar']);
             </div>
 
             <div class="form-actions">
-                <a href="index.php" class="btn btn-secondary">Batal</a>
+                <a href="/views/barang/daftar.php" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary">💾 Perbarui Data</button>
             </div>
         </form>
