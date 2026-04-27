@@ -371,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="login-link">
-        Sudah punya akun? <a href="login.php">Login di sini</a>
+        Sudah punya akun? <a href="/public/index.php?page=login">Login di sini</a>
     </div>
 
     <footer>&copy; <?= date('Y') ?> Inventaris App — PHP &amp; PDO</footer>

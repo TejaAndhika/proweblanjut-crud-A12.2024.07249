@@ -3,6 +3,11 @@
 include __DIR__ . '/../../public/koneksi.php';
 session_start();
 
+if (empty($_SESSION['user_id'])) {
+    header('Location: /public/index.php?page=login');
+    exit;
+}
+
 // Prepared Statement — Validasi ID dari URL
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
@@ -29,7 +34,7 @@ $stmt->execute([':id' => $id]);
 
 // Hapus file gambar dari server jika ada
 if (!empty($barang['gambar'])) {
-    $file_path = __DIR__ . '/uploads/' . $barang['gambar'];
+    $file_path = __DIR__ . '/../public/uploads/barang/' . $barang['gambar'];
     if (file_exists($file_path)) {
         unlink($file_path);
     }

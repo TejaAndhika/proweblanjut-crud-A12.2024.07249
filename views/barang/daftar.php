@@ -101,9 +101,9 @@ function stockBadge($qty) {
             Inventaris<span>App</span>
         </a>
         <nav>
-            <a href="/views/auth/logout.php">Log Out</a>
-            <a href="/views/barang/daftar.php" class="active">Daftar Barang</a>
-            <a href="/views/barang/tambah.php">+ Tambah</a>
+           <a href="index.php?page=logout">Log Out</a>
+            <a href="index.php?page=barang" class="active">Daftar Barang</a>
+            <a href="index.php?page=tambah">+ Tambah</a>
         </nav>
     </div>
 </header>
@@ -183,8 +183,8 @@ function stockBadge($qty) {
                         <tr>
                             <td class="mono" style="color:var(--text-muted)"><?= $b['id'] ?></td>
                             <td>
-                                <?php if (!empty($b['gambar']) && file_exists(__DIR__ . '/uploads/' . $b['gambar'])): ?>
-                                    <img src="uploads/<?= htmlspecialchars($b['gambar']) ?>"
+                                <?php if (!empty($b['gambar']) && file_exists(__DIR__ . '/../public/uploads/barang/' . $b['gambar'])): ?>
+                                   <img src="../../public/uploads/barang/<?= htmlspecialchars($b['gambar']) ?>" ...>
                                          alt="<?= htmlspecialchars($b['nama_barang']) ?>"
                                          class="barang-img"
                                          loading="lazy">
@@ -205,7 +205,7 @@ function stockBadge($qty) {
                                     <a href="edit.php?id=<?= $b['id'] ?>" class="btn btn-edit btn-sm">✏️ Edit</a>
                                     <a href="hapus.php?id=<?= $b['id'] ?>"
                                        class="btn btn-delete btn-sm"
-                                       onclick="return confirm('⚠️ Yakin ingin menghapus barang ini?\n\nNama: <?= addslashes(htmlspecialchars($b['nama_barang'])) ?>\n\nTindakan ini tidak bisa dibatalkan!')">
+                                       onclick="return confirm(<?= json_encode('Yakin ingin menghapus ' . $b['nama_barang'] . '? Tindakan ini tidak bisa dibatalkan.') ?>)"
                                         🗑️ Hapus
                                     </a>
                                 </div>

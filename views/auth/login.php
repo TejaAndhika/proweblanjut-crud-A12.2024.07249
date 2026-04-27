@@ -327,7 +327,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <?php endif; ?>
 
-        <form method="POST" action="login.php">
+        <form method="POST" action="/public/index.php?page=login">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username"
@@ -365,7 +365,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div style="text-align:center;margin-top:1.25rem;font-size:0.85rem;color:var(--text-muted)">
         Belum punya akun?
-        <a href="register.php" style="color:var(--accent);text-decoration:none;font-weight:600;margin-left:4px">Daftar di sini →</a>
+       <a href="/public/index.php?page=register"color:var(--accent);text-decoration:none;font-weight:600;margin-left:4px">Daftar di sini →</a>
     </div>
 
     <footer>&copy; <?= date('Y') ?> Inventaris App — PHP &amp; PDO</footer>

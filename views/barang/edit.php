@@ -4,6 +4,11 @@
 include __DIR__ . '/../../public/koneksi.php';
 session_start();
 
+if (empty($_SESSION['user_id'])) {
+    header('Location: /public/index.php?page=login');
+    exit;
+}
+
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
     header('Location: /views/barang/daftar.php');
@@ -94,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ── 4. Eksekusi jika tidak ada error ─────────────────────────
     if (empty($errors)) {
-        $upload_dir = __DIR__ . '/uploads/';
+       $upload_dir = __DIR__ . '/../public/uploads/barang/';
 
         if ($ada_file_baru && $nama_file_gambar !== $barang['gambar']) {
             // Pindahkan file baru
@@ -259,13 +264,17 @@ $punya_gambar = !empty($barang['gambar']);
 <body>
 <header>
     <div class="header-inner">
-        <a href="/views/barang/daftar.php" class="logo">
+        <a href="/public/index.php?page=barang" class="logo">
             <div class="logo-icon">📦</div>
             Inventaris<span>App</span>
         </a>
         <nav>
-            <a href="/views/barang/daftar.php">Daftar Barang</a>
-            <a href="/views/barang/tambah.php">+ Tambah</a>
+            <!-- navigasi -->
+            <a href="/public/index.php?page=barang">Daftar Barang</a>
+            <a href="/public/index.php?page=tambah">+ Tambah</a>
+
+            <!-- tombol batal -->
+            <a href="/public/index.php?page=barang" class="btn btn-secondary">← Batal</a>
         </nav>
     </div>
 </header>
