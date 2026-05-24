@@ -1,8 +1,11 @@
 <?php
-// edit.php - Edit Barang + Ganti/Hapus Gambar
 
 include __DIR__ . '/../../public/koneksi.php';
-session_start();
+
+// session sudah distart di index.php — jangan panggil lagi
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (empty($_SESSION['user_id'])) {
     header('Location: /public/index.php?page=login');
@@ -11,7 +14,7 @@ if (empty($_SESSION['user_id'])) {
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
-    header('Location: /views/barang/daftar.php');
+    header('Location: /public/index.php?page=barang');
     exit;
 }
 
@@ -21,7 +24,7 @@ $barang = $stmt->fetch();
 
 if (!$barang) {
     $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Data barang tidak ditemukan.'];
-    header('Location: /views/barang/daftar.php');
+    header('Location: /public/index.php?page=barang');
     exit;
 }
 
@@ -99,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ── 4. Eksekusi jika tidak ada error ─────────────────────────
     if (empty($errors)) {
-       $upload_dir = __DIR__ . '/../public/uploads/barang/';
+        $upload_dir = __DIR__ . '/../../uploads/thumbnails/';
 
         if ($ada_file_baru && $nama_file_gambar !== $barang['gambar']) {
             // Pindahkan file baru
@@ -140,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             $_SESSION['flash'] = ['type' => 'success', 'msg' => '✅ Data barang berhasil diperbarui!'];
-            header('Location: /views/barang/daftar.php');
+            header('Location: /public/index.php?page=barang');
             exit;
         }
     }
@@ -269,12 +272,8 @@ $punya_gambar = !empty($barang['gambar']);
             Inventaris<span>App</span>
         </a>
         <nav>
-            <!-- navigasi -->
             <a href="/public/index.php?page=barang">Daftar Barang</a>
             <a href="/public/index.php?page=tambah">+ Tambah</a>
-
-            <!-- tombol batal -->
-            <a href="/public/index.php?page=barang" class="btn btn-secondary">← Batal</a>
         </nav>
     </div>
 </header>
@@ -301,7 +300,7 @@ $punya_gambar = !empty($barang['gambar']);
             <h2>Form Edit Barang</h2>
             <span style="font-size:.8rem;color:var(--text-muted)">ID #<?= $id ?></span>
         </div>
-        <form method="POST" action="edit.php?id=<?= $id ?>" enctype="multipart/form-data" id="form-edit">
+        <form method="POST" action="/public/index.php?page=edit&id=<?= $id ?>" enctype="multipart/form-data" id="form-edit">
             <!-- Hidden field: dikirim bernilai "1" jika user klik tombol hapus gambar -->
             <input type="hidden" name="hapus_gambar" id="hapus_gambar" value="0">
 
@@ -336,7 +335,7 @@ $punya_gambar = !empty($barang['gambar']);
                     <?php if ($punya_gambar): ?>
                     <!-- Tampilkan gambar yang sudah ada di database -->
                     <div class="gambar-saat-ini" id="area-gambar-saat-ini">
-                        <img src="uploads/<?= htmlspecialchars($barang['gambar']) ?>"
+                        <img src="../../uploads/thumbnails/<?= htmlspecialchars($barang['gambar']) ?>"
                              alt="<?= htmlspecialchars($barang['nama_barang']) ?>"
                              id="img-db">
                         <div class="gambar-saat-ini-info">
@@ -386,7 +385,7 @@ $punya_gambar = !empty($barang['gambar']);
             </div>
 
             <div class="form-actions">
-                <a href="/views/barang/daftar.php" class="btn btn-secondary">Batal</a>
+                <a href="/public/index.php?page=barang" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary">💾 Perbarui Data</button>
             </div>
         </form>

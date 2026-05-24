@@ -1,11 +1,8 @@
 <?php
-// tambah.php - Tambah Barang + Upload Gambar
 
 include __DIR__ . '/../../public/koneksi.php';
-
-if (empty($_SESSION['user_id'])) {
-    header('Location: /public/index.php?page=login');
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
 $errors = [];
@@ -83,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ── 4. Simpan ke Database jika tidak ada error ─────────────────
     if (empty($errors)) {
         if ($nama_file_gambar !== null) {
-           $upload_dir = __DIR__ . '/../public/uploads/barang/';
+            $upload_dir = __DIR__ . '/../../uploads/thumbnails/';
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }
@@ -109,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'type' => 'success',
                 'msg'  => '✅ Barang "' . htmlspecialchars($data['nama_barang']) . '" berhasil ditambahkan!',
             ];
-            header('Location: /views/barang/daftar.php');
+            header('Location: /public/index.php?page=barang');
             exit;
         }
     }
@@ -173,17 +170,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <header>
     <div class="header-inner">
-        <a href="../../public/index.php" class="logo">
+        <a href="/public/index.php?page=barang" class="logo">
             <div class="logo-icon">📦</div>
             Inventaris<span>App</span>
         </a>
         <nav>
-            <!-- navigasi -->
             <a href="/public/index.php?page=barang">Daftar Barang</a>
-            <a href="/public/index.php?page=tambah">+ Tambah</a>
-
-            <!-- tombol batal -->
-            <a href="/public/index.php?page=barang" class="btn btn-secondary">← Batal</a>
+            <a href="/public/index.php?page=tambah" class="active">+ Tambah</a>
         </nav>
     </div>
 </header>
@@ -209,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card-header">
             <h2>📝 Form Tambah Barang</h2>
         </div>
-        <form method="POST" action="/views/barang/tambah.php" enctype="multipart/form-data">
+        <form method="POST" action="/public/index.php?page=tambah" enctype="multipart/form-data">
             <div class="form-grid">
                 <div class="form-group full">
                     <label for="nama_barang">Nama Barang</label>
@@ -256,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="form-actions">
-                <a href="/views/barang/daftar.php" class="btn btn-secondary">← Batal</a>
+                <a href="/public/index.php?page=barang" class="btn btn-secondary">← Batal</a>
                 <button type="submit" class="btn btn-primary">✅ Simpan Barang</button>
             </div>
         </form>

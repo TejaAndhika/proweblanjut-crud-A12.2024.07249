@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $page = $_GET['page'] ?? 'login';
 
 // Halaman yang butuh login
-$protected = ['barang', 'tambah', 'edit', 'hapus', 'register'];
+$protected = ['barang', 'tambah', 'edit', 'hapus'];
 
 if (in_array($page, $protected) && empty($_SESSION['user_id'])) {
     $_SESSION['redirect_after_login'] = 'index.php?page=' . $page;

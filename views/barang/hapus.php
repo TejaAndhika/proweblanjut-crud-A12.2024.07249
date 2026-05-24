@@ -34,7 +34,7 @@ $stmt->execute([':id' => $id]);
 
 // Hapus file gambar dari server jika ada
 if (!empty($barang['gambar'])) {
-    $file_path = __DIR__ . '/../public/uploads/barang/' . $barang['gambar'];
+    $file_path = __DIR__ . '/uploads/' . $barang['gambar'];
     if (file_exists($file_path)) {
         unlink($file_path);
     }

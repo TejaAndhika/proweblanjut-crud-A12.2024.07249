@@ -1,65 +1,8 @@
 <?php
-// register.php - Halaman Registrasi User Baru
 
-include __DIR__ . '/../../public/koneksi.php';
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Jika sudah login, langsung ke public/index.php
-if (!empty($_SESSION['user_id'])) {
-    header('Location: ../../public/index.php');
-    exit;
-}
-
-$errors  = [];
-$success = '';
-$data    = ['username' => ''];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data['username'] = trim($_POST['username'] ?? '');
-    $password         = trim($_POST['password'] ?? '');
-    $confirm_password = trim($_POST['confirm_password'] ?? '');
-
-    // Validasi
-    if (empty($data['username'])) {
-        $errors[] = 'Username wajib diisi.';
-    } elseif (strlen($data['username']) < 3) {
-        $errors[] = 'Username minimal 3 karakter.';
-    } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $data['username'])) {
-        $errors[] = 'Username hanya boleh huruf, angka, dan underscore (_).';
-    }
-
-    if (empty($password)) {
-        $errors[] = 'Password wajib diisi.';
-    } elseif (strlen($password) < 6) {
-        $errors[] = 'Password minimal 6 karakter.';
-    }
-
-    if ($password !== $confirm_password) {
-        $errors[] = 'Konfirmasi password tidak cocok.';
-    }
-
-    // Cek apakah username sudah dipakai
-    if (empty($errors)) {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = :username LIMIT 1");
-        $stmt->execute([':username' => $data['username']]);
-        if ($stmt->fetch()) {
-            $errors[] = 'Username "' . htmlspecialchars($data['username']) . '" sudah digunakan. Pilih username lain.';
-        }
-    }
-
-    // Simpan ke database
-    if (empty($errors)) {
-        $hashed = password_hash($password, PASSWORD_BCRYPT);
-        $stmt   = $conn->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
-        $stmt->execute([':username' => $data['username'], ':password' => $hashed]);
-
-        $success = 'Akun berhasil dibuat! Silakan login menggunakan akun baru kamu.';
-        $data    = ['username' => ''];  // Reset form
-    }
-}
+if (!isset($errors))  $errors  = [];
+if (!isset($success)) $success = '';
+if (!isset($data))    $data    = ['username' => ''];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -303,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ✅ <?= htmlspecialchars($success) ?>
             </div>
             <div style="text-align:center;margin-top:1rem">
-                <a href="login.php" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--accent);color:#fff;border-radius:9px;text-decoration:none;font-weight:700;font-size:0.9rem;transition:all .2s"
+                <a href="/public/index.php?page=login" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--accent);color:#fff;border-radius:9px;text-decoration:none;font-weight:700;font-size:0.9rem;transition:all .2s"
                    onmouseover="this.style.background='#7c75ff'" onmouseout="this.style.background='var(--accent)'">
                     🔐 Pergi ke Halaman Login
                 </a>
@@ -321,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <?php endif; ?>
 
-            <form method="POST" action="register.php" id="registerForm">
+            <form method="POST" action="/public/index.php?page=register" id="registerForm">
 
                 <div class="form-group">
                     <label for="username">Username</label>

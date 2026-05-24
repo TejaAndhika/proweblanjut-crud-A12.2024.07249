@@ -96,14 +96,14 @@ function stockBadge($qty) {
 
 <header>
     <div class="header-inner">
-        <a href="../../public/index.php" class="logo">
+        <a href="/public/index.php?page=barang" class="logo">
             <div class="logo-icon">📦</div>
             Inventaris<span>App</span>
         </a>
         <nav>
-           <a href="index.php?page=logout">Log Out</a>
-            <a href="index.php?page=barang" class="active">Daftar Barang</a>
-            <a href="index.php?page=tambah">+ Tambah</a>
+            <a href="/public/index.php?page=logout">Log Out</a>
+            <a href="/public/index.php?page=barang" class="active">Daftar Barang</a>
+            <a href="/public/index.php?page=tambah">+ Tambah</a>
         </nav>
     </div>
 </header>
@@ -149,7 +149,7 @@ function stockBadge($qty) {
     <div class="card">
         <div class="card-header">
             <h2>Data Barang</h2>
-            <a href="/views/barang/tambah.php" class="btn btn-primary">
+            <a href="/public/index.php?page=tambah" class="btn btn-primary">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                 Tambah Barang
             </a>
@@ -160,7 +160,7 @@ function stockBadge($qty) {
                 <div class="empty-state">
                     <div class="big-icon">📭</div>
                     <p>Belum ada data barang. Mulai tambahkan sekarang!</p>
-                    <a href="/views/barang/tambah.php" class="btn btn-primary">+ Tambah Barang Pertama</a>
+                    <a href="/public/index.php?page=tambah" class="btn btn-primary">+ Tambah Barang Pertama</a>
                 </div>
             <?php else: ?>
                 <table>
@@ -183,8 +183,8 @@ function stockBadge($qty) {
                         <tr>
                             <td class="mono" style="color:var(--text-muted)"><?= $b['id'] ?></td>
                             <td>
-                                <?php if (!empty($b['gambar']) && file_exists(__DIR__ . '/../public/uploads/barang/' . $b['gambar'])): ?>
-                                   <img src="../../public/uploads/barang/<?= htmlspecialchars($b['gambar']) ?>" ...>
+                                <?php if (!empty($b['gambar']) && file_exists(__DIR__ . '/../../uploads/thumbnails/' . $b['gambar'])): ?>
+                                    <img src="../../uploads/thumbnails/<?= htmlspecialchars($b['gambar']) ?>"
                                          alt="<?= htmlspecialchars($b['nama_barang']) ?>"
                                          class="barang-img"
                                          loading="lazy">
@@ -202,10 +202,10 @@ function stockBadge($qty) {
                             <td><?= date('d M Y', strtotime($b['tanggal_masuk'])) ?></td>
                             <td>
                                 <div style="display:flex;gap:6px">
-                                    <a href="edit.php?id=<?= $b['id'] ?>" class="btn btn-edit btn-sm">✏️ Edit</a>
-                                    <a href="hapus.php?id=<?= $b['id'] ?>"
+                                    <a href="/public/index.php?page=edit&id=<?= $b['id'] ?>" class="btn btn-edit btn-sm">✏️ Edit</a>
+                                    <a href="/public/index.php?page=hapus&id=<?= $b['id'] ?>"
                                        class="btn btn-delete btn-sm"
-                                       onclick="return confirm(<?= json_encode('Yakin ingin menghapus ' . $b['nama_barang'] . '? Tindakan ini tidak bisa dibatalkan.') ?>)"
+                                       onclick="return confirm('⚠️ Yakin ingin menghapus barang ini?\n\nNama: <?= addslashes(htmlspecialchars($b['nama_barang'])) ?>\n\nTindakan ini tidak bisa dibatalkan!')">
                                         🗑️ Hapus
                                     </a>
                                 </div>

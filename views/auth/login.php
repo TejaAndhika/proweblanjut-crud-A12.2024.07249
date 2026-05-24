@@ -1,17 +1,15 @@
-<!-- http://localhost/views/auth/login.php -->
-
 <?php
 // login.php - Halaman & Proses Login (dengan fitur Cookies "Ingat Saya")
 
 require_once __DIR__ . '/../../public/koneksi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) session_start();
 }
 
 // ── Cek apakah sudah login via SESSION ──────────────────────────
 if (!empty($_SESSION['user_id'])) {
-    header('Location: ../../public/index.php');
+    header('Location: /public/index.php?page=barang');
     exit;
 }
 
@@ -42,7 +40,7 @@ if (empty($_SESSION['user_id']) && !empty($_COOKIE['remember_token'])) {
         $stmt = $conn->prepare("UPDATE users SET remember_token = :token WHERE id = :id");
         $stmt->execute([':token' => $new_token, ':id' => $user['id']]);
 
-        header('Location: ../../public/index.php');
+        header('Location: /public/index.php?page=barang');
         exit;
     } else {
         // Token tidak valid / sudah kedaluwarsa — hapus cookie
@@ -87,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([':token' => $token, ':id' => $user['id']]);
             }
 
-            $redirect = $_SESSION['redirect_after_login'] ?? '../../public/index.php';
+            $redirect = $_SESSION['redirect_after_login'] ?? '/public/index.php?page=barang';
             unset($_SESSION['redirect_after_login']);
             header('Location: ' . $redirect);
             exit;
@@ -321,6 +319,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="card">
+        <?php if (!empty($_SESSION['flash_register'])): ?>
+        <div class="alert-danger" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.25);color:#4ade80;">
+            <span>✅</span> <?= htmlspecialchars($_SESSION['flash_register']) ?>
+        </div>
+        <?php unset($_SESSION['flash_register']); endif; ?>
+
         <?php if ($error): ?>
         <div class="alert-danger">
             <span>⚠️</span> <?= htmlspecialchars($error) ?>
@@ -365,7 +369,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div style="text-align:center;margin-top:1.25rem;font-size:0.85rem;color:var(--text-muted)">
         Belum punya akun?
-       <a href="/public/index.php?page=register"color:var(--accent);text-decoration:none;font-weight:600;margin-left:4px">Daftar di sini →</a>
+        <a href="/public/index.php?page=register" style="color:var(--accent);text-decoration:none;font-weight:600;margin-left:4px">Daftar di sini →</a>
     </div>
 
     <footer>&copy; <?= date('Y') ?> Inventaris App — PHP &amp; PDO</footer>

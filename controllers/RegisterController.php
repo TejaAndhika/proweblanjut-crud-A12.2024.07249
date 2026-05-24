@@ -1,5 +1,4 @@
 <?php
-// controllers/RegisterController.php - Logika Registrasi
 
 require_once __DIR__ . '/../public/koneksi.php';
 require_once __DIR__ . '/../models/UserModel.php';
@@ -47,8 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Simpan ke database
     if (empty($errors)) {
         $model->registerUser($data['username'], $password);
-        $success  = 'Akun berhasil dibuat! Silakan login menggunakan akun baru kamu.';
-        $data     = ['username' => ''];
+        $_SESSION['flash_register'] = 'Akun berhasil dibuat! Silakan login.';
+        header('Location: /public/index.php?page=login');
+        exit;
     }
 }
 
