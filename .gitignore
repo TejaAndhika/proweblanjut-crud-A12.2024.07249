@@ -1,0 +1,17 @@
+koneksi.php
+index.php
+style.css
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+uploads/thumbnails/*
+!uploads/thumbnails/.gitkeep
+*.log
+*.bak
+*.tmp
+*~
+php_errorlog

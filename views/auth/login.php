@@ -1,10 +1,9 @@
 <?php
-// login.php - Halaman & Proses Login (dengan fitur Cookies "Ingat Saya")
 
 require_once __DIR__ . '/../../public/koneksi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
-    if (session_status() === PHP_SESSION_NONE) session_start();
+    session_start();
 }
 
 // ── Cek apakah sudah login via SESSION ──────────────────────────
