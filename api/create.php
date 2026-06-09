@@ -66,9 +66,7 @@ try {
         ':tanggal_masuk' => $tanggal_masuk,
     ]);
 
-    http_response_code(201);
-    echo json_encode([
-        'status'  => 'sukses',
+    http_response_code(201);'status'  => 'sukses',
         'message' => 'Barang berhasil ditambahkan',
         'data'    => [
             'id'           => $conn->lastInsertId(),
@@ -76,6 +74,8 @@ try {
             'jumlah'       => (int)$jumlah,
             'harga'        => (float)$harga,
             'tanggal_masuk'=> $tanggal_masuk,
+    echo json_encode([
+        
         ]
     ]);
 } catch (PDOException $e) {
